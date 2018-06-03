@@ -3,6 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { getUserInfo } from '../store/actions/userActions';
 import { Container, List, ListItem } from 'native-base';
+import { Link, Switch, Route } from 'react-router-native';
+
+import ClientList from './ClientList';
+import ClientDetail from './ClientDetail';
 
 class Dashboard extends Component {
   state = {
@@ -33,21 +37,24 @@ class Dashboard extends Component {
   }
 
   render() {
-    console.log(this.props.clients);
     return (
-      <Container style={styles.container}>
-        <Text>Dashboard Screen</Text>
-        <Text>Hey, {this.props.name}</Text>
-        <List>
-          {this.props.clients.map((client, i) => {
-            return (
-              <ListItem key={i}>
-                <Text>{client.name}</Text>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Container>
+      // <Container style={styles.container}>
+      //   <Text>Dashboard Screen</Text>
+      //   <Text>Hey, {this.props.name}</Text>
+      //   <List>
+      //     {this.props.clients.map((client, i) => {
+      //       return (
+      //         <ListItem key={i}>
+      //           <Text>{client.name}</Text>
+      //         </ListItem>
+      //       );
+      //     })}
+      //   </List>
+      // </Container>
+      <Switch>
+        <Route path="/client" component={ClientDetail} />
+        <Route exact path="/" component={ClientList} />
+      </Switch>
     );
   }
 }

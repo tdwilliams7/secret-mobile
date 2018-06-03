@@ -2,8 +2,16 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { getUserInfo } from '../store/actions/userActions';
-import { Container, List, ListItem } from 'native-base';
-import { createStackNavigator } from 'react-navigation';
+import {
+  Container,
+  List,
+  ListItem,
+  Content,
+  Card,
+  CardItem,
+  Body
+} from 'native-base';
+import { Link, withRouter } from 'react-router-native';
 import ClientDetail from './ClientDetail';
 
 class ClientList extends Component {
@@ -29,22 +37,30 @@ class ClientList extends Component {
   render() {
     return (
       <Container style={styles.container}>
-        <Text>ClientList Screen</Text>
-        <Text>Hey, {this.props.name}</Text>
-        <List>
-          {this.props.clients.map((client, i) => {
-            return (
-              <ListItem
-                key={i}
-                onPress={() =>
-                  this.props.navigation.navigate({ name: 'ClientDetail' })
-                }
-              >
-                <Text>{client.name}</Text>
-              </ListItem>
-            );
-          })}
-        </List>
+        <Content>
+          <Text>ClientList Screen</Text>
+          <Text>Hey, {this.props.name}</Text>
+          <List>
+            {this.props.clients.map((client, i) => {
+              return (
+                <ListItem
+                  key={i}
+                  style={styles.card}
+                  onPress={() =>
+                    this.props.history.push({
+                      pathname: `/app/${client._id}`,
+                      state: {
+                        clientName: client.name
+                      }
+                    })
+                  }
+                >
+                  <Text>{client.name}</Text>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Content>
       </Container>
     );
   }
@@ -53,9 +69,12 @@ class ClientList extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     flex: 1
+  },
+  card: {
+    marginBottom: 5
   }
 });
 
@@ -71,8 +90,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ClientStackNavigator = createStackNavigator({
-  ClientDetail: ClientDetail
-});
-
-export default connect(mapStateToProps, { getUserInfo })(ClientList);
+export default withRouter(
+  connect(mapStateToProps, { getUserInfo })(ClientList)
+);

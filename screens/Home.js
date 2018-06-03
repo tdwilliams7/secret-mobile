@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import pic from '../assets/adrian-233469-unsplash.jpg';
 import { Icon } from 'native-base';
 
-import { createBottomTabNavigator } from 'react-navigation';
+// import { createBottomTabNavigator } from 'react-navigation';
 
 class HomeScreen extends Component {
   static navigationOptions = {
@@ -25,11 +25,11 @@ class HomeScreen extends Component {
   }
 }
 
-const AppTabNavigator = createBottomTabNavigator({
-  HomeTab: {
-    screen: HomeScreen
-  }
-});
+// const AppTabNavigator = createBottomTabNavigator({
+//   HomeTab: {
+//     screen: HomeScreen
+//   }
+// });
 
 const styles = StyleSheet.create({
   container: {

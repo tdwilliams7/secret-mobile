@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
 import {
   Container,
   Header,
@@ -16,9 +15,12 @@ import {
 } from 'native-base';
 import { connect } from 'react-redux';
 import { logIn } from '../store/actions/userActions';
+import { Redirect } from 'react-router';
+
 import MainScreen from './MainScreen';
 import Dashboard from './Dashboard';
 import ClientList from './ClientList';
+import NewDashboard from './NewDashboard';
 
 class LoginScreen extends Component {
   state = {
@@ -34,7 +36,7 @@ class LoginScreen extends Component {
 
   render() {
     if (this.props.loggedIn) {
-      return <Tabs />;
+      return <Redirect to="/clients" />;
     }
     return (
       <ImageBackground
@@ -54,6 +56,7 @@ class LoginScreen extends Component {
                   value={this.state.email}
                   placeholder="Username"
                   type="username"
+                  autoCapitalize="none"
                 />
               </Item>
               <Item>
@@ -63,7 +66,7 @@ class LoginScreen extends Component {
                   name="password"
                   value={this.state.password}
                   placeholder="Password"
-                  type="password"
+                  autoCapitalize="none"
                 />
               </Item>
               <View
@@ -143,20 +146,5 @@ const mapStateToProps = state => {
     loggedIn: state.userReducer.loggedIn
   };
 };
-
-const Tabs = createBottomTabNavigator({
-  Dash: {
-    screen: ClientList,
-    navigationOptions: {
-      tabBarLabel: 'Dashboard'
-    }
-  },
-  Clients: {
-    screen: MainScreen,
-    navigationOptions: {
-      tabBarLabel: 'Clients'
-    }
-  }
-});
 
 export default connect(mapStateToProps, { logIn })(LoginScreen);

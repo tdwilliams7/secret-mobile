@@ -2,16 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon } from 'native-base';
 import { connect } from 'react-redux';
-import { createBottomTabNavigator } from 'react-navigation';
+// import { createBottomTabNavigator } from 'react-navigation';
 import { getUserInfo } from '../store/actions/userActions';
 import Home from './Home';
 
 class MainScreen extends React.Component {
-  static navigationOptions = {
-    headerLeft: <Icon name="arrow-back" style={{ paddingLeft: 10 }} />,
-    title: 'Time Tracker'
-  };
-
   componentDidMount() {
     this.props.getUserInfo(this.props.user);
   }

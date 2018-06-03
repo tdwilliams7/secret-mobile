@@ -5,7 +5,8 @@ import {
   CHANGE_PASSWORD,
   PASSWORD_CHANGED,
   GETTING_USER_INFO,
-  GOT_USER_INFO
+  GOT_USER_INFO,
+  SET_NAME
 } from '../actions/userActions';
 
 const initialState = {
@@ -19,7 +20,8 @@ const initialState = {
   signedUp: false,
   loggedIn: false,
   changeSuccess: false,
-  loading: true
+  loading: true,
+  userName: ''
 };
 
 export const userReducer = (state = initialState, action) => {
@@ -51,6 +53,11 @@ export const userReducer = (state = initialState, action) => {
         clients: action.payload.clients,
         hoursLogged: action.payload.hoursLogged,
         invoices: action.payload.invoices
+      };
+    case SET_NAME:
+      return {
+        ...state,
+        userName: action.payload
       };
     default:
       return state;
