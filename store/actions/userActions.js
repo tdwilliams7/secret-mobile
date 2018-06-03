@@ -6,6 +6,7 @@ export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
 export const PASSWORD_CHANGED = 'PASSWORD_CHANGED';
 export const GETTING_USER_INFO = 'GETTING_USER_INFO';
 export const GOT_USER_INFO = 'GOT_USER_INFO';
+export const SET_NAME = 'SET_NAME';
 
 const backend = process.env.BASE_URL || 'http://localhost:5000';
 
@@ -109,5 +110,11 @@ export const getUserInfo = id => {
       .catch(err => {
         console.log(err);
       });
+  };
+};
+
+export const setClientName = name => {
+  return dispatch => {
+    dispatch({ type: 'SET_NAME', payload: name });
   };
 };
