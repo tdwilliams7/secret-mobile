@@ -34,12 +34,13 @@ class Navigate extends Component {
           />
           <Card
             path={'/app/:id'}
+            title="Timer Tracker"
             render={props => {
               return <TabNav setName={this.setName} {...props} />;
             }}
             title={this.state.clientName}
           />
-          <Card exact path="/" component={LoginScreen} />
+          <Card exact path="/" title="Timer Tracker" component={LoginScreen} />
         </Navigation>
       </NativeRouter>
     );

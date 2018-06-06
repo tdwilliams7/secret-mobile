@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content, Spinner, Button } from 'native-base';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import moment from 'moment';
-import { stopActiveTimer } from '../store/actions/timestampActions';
+import {
+  stopActiveTimer,
+  startNewTimer
+} from '../store/actions/timestampActions';
+import { backend } from '../config';
 
 class Timer extends Component {
   state = {
@@ -14,40 +18,71 @@ class Timer extends Component {
     now: '',
     activeTimer: false,
     loading: true
+    // tick: setInterval(this.setNow, 1000)
   };
   componentDidMount() {
-    const tick = setInterval(this.setNow, 1000);
-    this.setState({ ...this.state, tick });
-    axios
-      .get(
-        `http://localhost:5000/vendor/ts/${this.props.user}/client/${
-          this.props.clientId
-        }`
-      )
-      .then(({ data }) => {
-        const active = data.hoursLogged.filter(timestamp => {
-          return timestamp.active === true;
-        });
-        if (active.length) {
-          this.setState({
-            ...this.state,
-            activeTimer: true,
-            activeTimerId: active[0]._id,
-            startTime: active[0].startTime
+    this.getTokenStorage()
+      .then(storage => {
+        axios
+          .get(
+            `${backend}/vendor/ts/${this.props.user}/client/${
+              this.props.clientId
+            }`,
+            {
+              headers: {
+                token: storage.token,
+                userType: storage.userType
+              }
+            }
+          )
+          .then(({ data }) => {
+            const active = data.hoursLogged.filter(timestamp => {
+              return timestamp.active === true;
+            });
+            if (active.length) {
+              this.setState({
+                ...this.state,
+                activeTimer: true,
+                activeTimerId: active[0]._id,
+                startTime: active[0].startTime
+              });
+              this.tick = setInterval(this.setNow, 1000);
+            }
+            this.setState({
+              ...this.state,
+              loading: false
+            });
+          })
+          .catch(err => {
+            console.log(err);
           });
-        }
-        this.setState({
-          ...this.state,
-          loading: false
-        });
       })
       .catch(err => {
         console.log(err);
       });
   }
 
+  getTokenStorage = async () => {
+    try {
+      let token = await AsyncStorage.getItem('Authorization');
+      let userType = await AsyncStorage.getItem('UserType');
+      return { token, userType };
+    } catch (err) {
+      return { 'error in async stuff': err };
+    }
+  };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props && this.props.activeTimerId) {
+      this.setState({
+        ...this.state,
+        activeTimerId: this.props.activeTimerId
+      });
+    }
+  }
+
   componentWillUnmount() {
-    clearInterval(this.state.tick);
+    clearInterval(this.tick);
     this.setState({
       name: '',
       activeTimerId: '',
@@ -66,13 +101,18 @@ class Timer extends Component {
   };
 
   stopTimer = () => {
-    console.log('stop timer clicked');
     this.props.stopActiveTimer(this.state.activeTimerId);
-    clearInterval(this.state.tick);
+    clearInterval(this.tick);
   };
 
   startTimer = () => {
-    console.log('start Timer clicked');
+    this.props.startNewTimer(this.props.user, this.props.clientId);
+    this.setState({
+      ...this.state,
+      activeTimer: true,
+      startTime: Date.now()
+    });
+    this.tick = setInterval(this.setNow, 1000);
   };
 
   render() {
@@ -81,7 +121,7 @@ class Timer extends Component {
     const duration = moment.duration(formattedNow.diff(formattedStart));
     return (
       <Container style={styles.container}>
-        <Content>
+        <Content scrollEnabled={false}>
           {this.state.loading ? (
             <Spinner />
           ) : this.state.activeTimer ? (
@@ -150,8 +190,12 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     user: state.userReducer.user,
-    hoursLogged: state.userReducer.hoursLogged
+    hoursLogged: state.userReducer.hoursLogged,
+    activeTimerId: state.timestampReducer.activeTimerId,
+    startTime: state.timestampReducer.startTime
   };
 };
 
-export default connect(mapStateToProps, { stopActiveTimer })(Timer);
+export default connect(mapStateToProps, { stopActiveTimer, startNewTimer })(
+  Timer
+);

@@ -39,65 +39,53 @@ class LoginScreen extends Component {
       return <Redirect to="/clients" />;
     }
     return (
-      <ImageBackground
-        source={require('../assets/adrian-233469-unsplash.jpg')}
-        style={styles.container}
-      >
-        <Container>
-          <Content scrollEnabled={false}>
-            <Text style={styles.title}>Lambda Labs </Text>
-            <Text style={styles.title}>Time Tracker</Text>
-            <Form style={styles.form}>
-              <Item>
-                <Input
-                  style={styles.inputText}
-                  onChangeText={email => this.setState({ email })}
-                  name="email"
-                  value={this.state.email}
-                  placeholder="Username"
-                  type="username"
-                  autoCapitalize="none"
-                />
-              </Item>
-              <Item>
-                <Input
-                  style={styles.inputText}
-                  onChangeText={password => this.setState({ password })}
-                  name="password"
-                  value={this.state.password}
-                  placeholder="Password"
-                  autoCapitalize="none"
-                />
-              </Item>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <Button onPress={() => this.setState({ type: 'vendor' })}>
-                  <Text>Vendor</Text>
-                </Button>
-                <Button onPress={() => this.setState({ type: 'client' })}>
-                  <Text>Client</Text>
-                </Button>
-              </View>
-            </Form>
+      // <ImageBackground
+      //   source={require('../assets/adrian-233469-unsplash.jpg')}
+      //   style={styles.container}
+      // >
+      <Container style={styles.container}>
+        <Content scrollEnabled={false}>
+          <Text style={styles.title}>Lambda Labs </Text>
+          <Text style={styles.title}>Time Tracker</Text>
+          <Form style={styles.form}>
+            <Item>
+              <Input
+                style={styles.inputText}
+                onChangeText={email => this.setState({ email })}
+                name="email"
+                value={this.state.email}
+                placeholder="Username"
+                type="username"
+                autoCapitalize="none"
+              />
+            </Item>
+            <Item>
+              <Input
+                style={styles.inputText}
+                onChangeText={password => this.setState({ password })}
+                name="password"
+                value={this.state.password}
+                placeholder="Password"
+                autoCapitalize="none"
+                secureTextEntry={true}
+              />
+            </Item>
+          </Form>
 
-            <Button style={styles.button} onPress={this.login}>
-              <Text style={styles.inputText}>Sign in</Text>
-            </Button>
-          </Content>
-        </Container>
-      </ImageBackground>
+          <Button style={styles.button} onPress={this.login}>
+            <Text style={styles.inputText}>Sign in</Text>
+          </Button>
+          <Text style={styles.tagLine}>Work your days, Get your pay.</Text>
+        </Content>
+      </Container>
+      // </ImageBackground>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: '#9FB1BC',
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
@@ -115,20 +103,20 @@ const styles = StyleSheet.create({
     width: 150,
     justifyContent: 'center',
     marginTop: 50,
-    marginLeft: 100,
-    backgroundColor: 'rgb(64, 127, 127)'
+    alignSelf: 'center',
+    backgroundColor: '#7CA982'
   },
   title: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 45,
-    marginLeft: 60,
+    alignSelf: 'center',
     marginTop: 25,
-    color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: '#2E5266',
     textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 3
+    textShadowRadius: 3,
+    color: 'white'
   },
   inputText: {
     color: 'white'
@@ -138,6 +126,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'stretch'
+  },
+  tagLine: {
+    flex: 1,
+    alignSelf: 'center',
+    marginTop: 50,
+    fontSize: 20,
+    color: 'white',
+    textShadowColor: '#2E5266',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 3
   }
 });
 

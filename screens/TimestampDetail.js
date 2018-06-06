@@ -10,9 +10,10 @@ import {
   Item,
   Button
 } from 'native-base';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import moment from 'moment';
+import { backend } from '../config';
 
 class TimestampDetail extends Component {
   state = {
@@ -27,17 +28,28 @@ class TimestampDetail extends Component {
   };
 
   componentDidMount() {
-    axios
-      .get(`http://localhost:5000/timestamp/${this.props.match.params.id}`)
-      .then(({ data }) => {
-        this.setState({
-          startTime: data.startTime,
-          endTime: data.endTime,
-          clientName: data.client.name,
-          comments: data.comments,
-          duration: data.duration,
-          date: moment(data.startTime).format('MM/DD/YYYY')
-        });
+    this.getTokenStorage()
+      .then(storage => {
+        axios
+          .get(`${backend}/timestamp/${this.props.match.params.id}`, {
+            headers: {
+              token: storage.token,
+              userType: storage.userType
+            }
+          })
+          .then(({ data }) => {
+            this.setState({
+              startTime: data.startTime,
+              endTime: data.endTime,
+              clientName: data.client.name,
+              comments: data.comments,
+              duration: data.duration,
+              date: moment(data.startTime).format('MM/DD/YYYY')
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
       .catch(err => {
         console.log(err);
@@ -45,7 +57,96 @@ class TimestampDetail extends Component {
   }
 
   onSubmitHandler = () => {
-    console.log(this.state);
+    const newEndTime = moment(this.state.startTime)
+      .add(Number(this.state.hours), 'hours')
+      .add(Number(this.state.mins), 'minutes');
+    this.getTokenStorage()
+      .then(storage => {
+        axios
+          .put(
+            `${backend}/timestamp/${this.props.match.params.id}`,
+            {
+              newTimestamp: this.state,
+              endTime: newEndTime,
+              duration: this.state.duration
+            },
+            {
+              headers: {
+                token: storage.token,
+                userType: storage.userType
+              }
+            }
+          )
+          .then(({ data }) => {
+            this.setState({
+              comments: data.comments,
+              endTime: data.endTime,
+              duration: data.duration
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  editTimestamp = event => {
+    event.preventDefault();
+    this.getTokenStorage()
+      .then(storage => {
+        const newDuration = `${this.state.hours}:${this.state.minutes}`;
+        this.setState({
+          duration: `${this.state.hours}:${this.state.minutes}`
+        });
+        const newEndTime = moment(this.state.startTime)
+          .add(Number(this.state.hours), 'hours')
+          .add(Number(this.state.mins), 'minutes');
+
+        axios
+          .put(
+            `${backend}/timestamp/${this.props.match.params.id}`,
+            {
+              newTimestamp: this.state,
+              endTime: newEndTime,
+              duration: newDuration
+            },
+            {
+              headers: {
+                token: storage.token,
+                userType: storage.userType
+              }
+            }
+          )
+          .then(updatedTStamp => {
+            this.setState({
+              comments: updatedTStamp.comments,
+              endTime: updatedTStamp.endTime,
+              duration: updatedTStamp.duration
+            });
+            this.setState({
+              successModal: true
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  getTokenStorage = async () => {
+    try {
+      let token = await AsyncStorage.getItem('Authorization');
+      let userType = await AsyncStorage.getItem('UserType');
+      return { token, userType };
+    } catch (err) {
+      return { 'error in async stuff': err };
+    }
   };
 
   render() {
